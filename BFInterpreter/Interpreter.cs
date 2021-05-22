@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using BFInterpreter.Parsers;
 
 namespace BFInterpreter {
-	public class Interpreter {
 	/// <summary>
 	/// Represents an interpreter for a <see cref="BFProgram"/>.
 	/// </summary>
+	public sealed class Interpreter {
 
 		private readonly Dictionary<char, ISymbolParser> symbolParsers;
 

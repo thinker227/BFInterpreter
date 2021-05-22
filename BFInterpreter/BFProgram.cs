@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace BFInterpreter {
-	public class BFProgram {
 	/// <summary>
 	/// Represents a BF program.
 	/// </summary>
+	public sealed class BFProgram {
 
 		/// <summary>
 		/// The default memory size.

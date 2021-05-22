@@ -4,7 +4,8 @@ using BFInterpreter;
 namespace ConsoleInterface {
 	public class Program {
 		private static void Main() {
-			Interpreter interpreter = new();
+			Interpreter interpreter = new("+++++++[.-]");
+			interpreter.Run();
 		}
 	}
 }

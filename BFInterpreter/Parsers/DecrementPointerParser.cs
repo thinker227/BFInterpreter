@@ -1,5 +1,5 @@
 ﻿namespace BFInterpreter.Parsers {
-	public class DecrementPointerParser : ISymbolParser {
+	public sealed class DecrementPointerParser : ISymbolParser {
 
 		public char Symbol => '<';
 

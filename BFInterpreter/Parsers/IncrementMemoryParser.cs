@@ -1,5 +1,5 @@
 ﻿namespace BFInterpreter.Parsers {
-	public class IncrementMemoryParser : ISymbolParser {
+	public sealed class IncrementMemoryParser : ISymbolParser {
 
 		public char Symbol => '+';
 
