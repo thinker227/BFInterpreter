@@ -5,10 +5,10 @@
 	public interface ISymbolParser {
 
 		/// <summary>
-		/// Gets the symbol represented by this <see cref="ISymbolParser"/>.
+		/// The symbol corresponding to the action of this <see cref="ISymbolParser"/>.
 		/// </summary>
-		/// <returns>The symbol corresponding to the action of this <see cref="ISymbolParser"/>.</returns>
-		public char GetSymbol();
+		public char Symbol { get; }
+
 		/// <summary>
 		/// Parses a symbol and performs a corresponding action.
 		/// </summary>

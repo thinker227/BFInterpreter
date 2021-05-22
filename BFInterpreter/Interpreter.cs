@@ -28,7 +28,7 @@ namespace BFInterpreter {
 
 		public void RegisterSymbolParser<T>() where T : class, ISymbolParser, new() {
 			ISymbolParser instance = Activator.CreateInstance<T>();
-			char symbol = instance.GetSymbol();
+			char symbol = instance.Symbol;
 			bool success = symbolParsers.TryAdd(symbol, instance);
 
 			if (!success) throw new Exception(

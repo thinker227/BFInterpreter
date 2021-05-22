@@ -1,7 +1,7 @@
 ﻿namespace BFInterpreter.Parsers {
-	internal class DecrementPointerParser : ISymbolParser {
+	public class DecrementPointerParser : ISymbolParser {
 
-		public char GetSymbol() => '<';
+		public char Symbol => '<';
 
 		public void Parse(Interpreter interpreter) => interpreter.Program.DecrementPointer();
 
