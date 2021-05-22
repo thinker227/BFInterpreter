@@ -26,6 +26,14 @@ namespace BFInterpreter {
 		/// </summary>
 		public int MemorySize { get; }
 		/// <summary>
+		/// The <see cref="IInput"/> for getting input to the program.
+		/// </summary>
+		public IInput Input { get; }
+		/// <summary>
+		/// The <see cref="IOutput"/> for writing output from the program.
+		/// </summary>
+		public IOutput Output { get; }
+		/// <summary>
 		/// Event invoked when the program exits.
 		/// </summary>
 		public event ProgramExitEventHandler OnProgramExit;
@@ -36,14 +44,18 @@ namespace BFInterpreter {
 		/// Initializes a new <see cref="BFProgram"/>.
 		/// </summary>
 		/// <param name="memorySize">The size of the program memory.</param>
-		public BFProgram(int memorySize) {
+		/// <param name="input">The <see cref="IInput"/> for getting input to the program.</param>
+		/// <param name="output">The <see cref="IOutput"/> for writing output from the program.</param>
+		public BFProgram(int memorySize, IInput input, IOutput output) {
 			if (memorySize <= 0) throw new ArgumentException(
 				"Memory size can't be less or equal to 0.", nameof(memorySize)
 			);
 
 			memory = new byte[memorySize];
-			MemorySize = memorySize;
 			memoryPointer = 0;
+			MemorySize = memorySize;
+			Input = input;
+			Output = output;
 		}
 
 
@@ -68,10 +80,10 @@ namespace BFInterpreter {
 		/// <returns></returns>
 		public byte GetCurrentMemory() => memory[memoryPointer];
 		/// <summary>
-		/// Sets the current memory pointed to by the memory pointer to a specified value.
+		/// Sets the current memory pointed to by the memory pointer to an
+		/// inputted value from the program's specified <see cref="IInput"/>.
 		/// </summary>
-		/// <param name="value">The new value of the current memory.</param>
-		public void SetCurrentMemory(byte value) => memory[memoryPointer] = value;
+		public void InputCurrentMemory() => memory[memoryPointer] = Input.GetInput();
 		/// <summary>
 		/// Increments the value of the current memory pointed to by the memory pointer.
 		/// </summary>
@@ -80,12 +92,17 @@ namespace BFInterpreter {
 		/// Decrements the value of the current memory pointed to by the memory pointer.
 		/// </summary>
 		public void DecrementCurrentMemory() => memory[memoryPointer]--;
-
 		/// <summary>
 		/// Gets the <see cref="IEnumerator{T}"/> of the memory.
 		/// </summary>
 		/// <returns>The <see cref="IEnumerator{T}"/> of the program's memory.</returns>
 		public IEnumerator<byte> GetMemoryEnumerator() => memory.AsEnumerable().GetEnumerator();
+
+		/// <summary>
+		/// Writes the current memory pointed to by the memory pointer
+		/// as output using the program's specified <see cref="IOutput"/>.
+		/// </summary>
+		public void WriteOutput() => Output.WriteOutput(memory[memoryPointer]);
 
 	}
 }

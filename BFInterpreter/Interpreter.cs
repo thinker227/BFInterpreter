@@ -20,6 +20,10 @@ namespace BFInterpreter {
 		/// The current string of commands interpreted by this <see cref="Interpreter"/>.
 		/// </summary>
 		public string CommandString { get; }
+		/// <summary>
+		/// The current location in <see cref="CommandString"/> execution is occuring.
+		/// </summary>
+		public int InstructionPointer { get; set; }
 
 
 
@@ -28,9 +32,12 @@ namespace BFInterpreter {
 		/// </summary>
 		/// <param name="commandString">The string of command to be interpreted.</param>
 		/// <param name="memorySize">The size of the program's memory.</param>
-		public Interpreter(string commandString, int memorySize) {
+		/// <param name="input">The <see cref="IInput"/> to use for getting input to the program.</param>
+		/// <param name="output">The <see cref="IOutput"/> to use writing output from the program.</param>
+		public Interpreter(string commandString, int memorySize, IInput input, IOutput output) {
 			symbolParsers = new();
-			Program = new(memorySize);
+			InstructionPointer = 0;
+			Program = new(memorySize, input, output);
 			CommandString = commandString;
 
 			RegisterDefaultSymbolParsers();
@@ -41,7 +48,10 @@ namespace BFInterpreter {
 		/// Memory size will be initialized to the default memory size.
 		/// </summary>
 		/// <param name="commandString">The string of command to be interpreted.</param>
-		public Interpreter(string commandString) : this(commandString, BFProgram.DefaultMemorySize) { }
+		/// <param name="input">The <see cref="IInput"/> to use for getting input to the program.</param>
+		/// <param name="output">The <see cref="IOutput"/> to use writing output from the program.</param>
+		public Interpreter(string commandString, IInput input, IOutput output) :
+			this(commandString, BFProgram.DefaultMemorySize, input, output) { }
 
 
 
@@ -55,7 +65,7 @@ namespace BFInterpreter {
 			bool success = symbolParsers.TryAdd(symbol, instance);
 
 			if (!success) throw new Exception(
-				$"A parser of type '{typeof(T).FullName}' is already registered."
+				$"A parser with the symbol '{symbol}' is already registered."
 			);
 		}
 		private void RegisterDefaultSymbolParsers() {
@@ -64,6 +74,9 @@ namespace BFInterpreter {
 
 			RegisterSymbolParser<IncrementMemoryParser>();
 			RegisterSymbolParser<DecrementMemoryParser>();
+
+			RegisterSymbolParser<InputParser>();
+			RegisterSymbolParser<OutputParser>();
 		}
 
 		/// <summary>
