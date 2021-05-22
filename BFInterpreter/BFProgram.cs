@@ -32,18 +32,18 @@ namespace BFInterpreter {
 
 
 
-		private void PointerSet(int position) {
+		private void SetPointer(int position) {
 			memoryPointer = position;
 			if (memoryPointer < 0) memoryPointer = MemorySize - 1;
 			if (memoryPointer >= MemorySize) memoryPointer = 0;
 		}
-		public void PointerIncrement() => PointerSet(MemoryPointer + 1);
-		public void PointerDecrement() => PointerSet(MemoryPointer - 1);
+		public void IncrementPointer() => SetPointer(MemoryPointer + 1);
+		public void DecrementPointer() => SetPointer(MemoryPointer - 1);
 
 		public byte GetCurrentMemory() => memory[memoryPointer];
 		public void SetCurrentMemory(byte value) => memory[memoryPointer] = value;
-		public void CurrentMemoryIncrement() => memory[memoryPointer]++;
-		public void CurrentMemoryDecrement() => memory[memoryPointer]--;
+		public void IncrementCurrentMemory() => memory[memoryPointer]++;
+		public void DecrementCurrentMemory() => memory[memoryPointer]--;
 
 		public IEnumerator<byte> GetMemoryEnumerator() => memory.AsEnumerable().GetEnumerator();
 
