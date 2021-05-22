@@ -16,7 +16,7 @@ namespace ConsoleInterface {
 			return result;
 		}
 
-		public void WriteOutput(byte output) => Console.WriteLine(output);
+		public void WriteOutput(byte output) => Console.WriteLine($"{(char)output} ({output})");
 
 	}
 }

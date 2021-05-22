@@ -24,6 +24,10 @@ namespace BFInterpreter {
 		/// The current location in <see cref="CommandString"/> execution is occuring.
 		/// </summary>
 		public int InstructionPointer { get; set; }
+		/// <summary>
+		/// Event invoked when the program exits.
+		/// </summary>
+		public event ProgramExitEventHandler OnProgramExit;
 
 
 
@@ -83,7 +87,21 @@ namespace BFInterpreter {
 		/// Runs the interpreter.
 		/// </summary>
 		public void Run() {
-			
+			while (true) {
+				char current = CommandString[InstructionPointer];
+				ParseSymbol(current);
+
+				InstructionPointer++;
+				if (InstructionPointer >= CommandString.Length) break;
+			}
+
+			OnProgramExit?.Invoke(0, "Success");
+		}
+
+		private void ParseSymbol(char symbol) {
+			if (symbolParsers.TryGetValue(symbol, out ISymbolParser parser)) {
+				parser.Parse(this);
+			}
 		}
 
 	}

@@ -33,10 +33,6 @@ namespace BFInterpreter {
 		/// The <see cref="IOutput"/> for writing output from the program.
 		/// </summary>
 		public IOutput Output { get; }
-		/// <summary>
-		/// Event invoked when the program exits.
-		/// </summary>
-		public event ProgramExitEventHandler OnProgramExit;
 
 
 
