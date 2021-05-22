@@ -81,6 +81,9 @@ namespace BFInterpreter {
 
 			RegisterSymbolParser<InputParser>();
 			RegisterSymbolParser<OutputParser>();
+
+			RegisterSymbolParser<BeginLoopParser>();
+			RegisterSymbolParser<EndLoopParser>();
 		}
 
 		/// <summary>
