@@ -7,7 +7,7 @@ namespace ConsoleInterface {
 			string program = Console.ReadLine();
 
 			ConsoleInputOutput inputOutput = new();
-			Interpreter interpreter = new(program, inputOutput, inputOutput);
+			Interpreter interpreter = new(program, new Config());
 			interpreter.OnProgramExit += OnExit;
 			interpreter.Run();
 		}

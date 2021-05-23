@@ -34,6 +34,9 @@ namespace BFInterpreter {
 		public BFException(Interpreter? interpreter, string? message) :
 			base(message) => Interpreter = interpreter;
 
+		public BFException(Interpreter? interpreter, Exception? innerException) :
+			base(null, innerException) => Interpreter = interpreter;
+
 		/// <summary>
 		/// Initializes a new <see cref="BFException"/> instance.
 		/// </summary>

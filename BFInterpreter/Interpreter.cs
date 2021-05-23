@@ -21,6 +21,10 @@ namespace BFInterpreter {
 		/// </summary>
 		public string CommandString { get; }
 		/// <summary>
+		/// The configuration for the interpreter and program.
+		/// </summary>
+		public IInterpreterConfig Config { get; }
+		/// <summary>
 		/// The current location in <see cref="CommandString"/> execution is occuring.
 		/// </summary>
 		public int InstructionPointer { get; set; }
@@ -35,27 +39,15 @@ namespace BFInterpreter {
 		/// Initializes a new <see cref="Interpreter"/> instance.
 		/// </summary>
 		/// <param name="commandString">The string of command to be interpreted.</param>
-		/// <param name="memorySize">The size of the program's memory.</param>
-		/// <param name="input">The <see cref="IInput"/> to use for getting input to the program.</param>
-		/// <param name="output">The <see cref="IOutput"/> to use writing output from the program.</param>
-		public Interpreter(string commandString, int memorySize, IInput input, IOutput output) {
+		/// <param name="config">The configuration for the interpreter and program.</param>
+		public Interpreter(string commandString, IInterpreterConfig config) {
 			symbolParsers = new();
 			InstructionPointer = 0;
-			Program = new(memorySize, input, output);
+			Program = new(config);
 			CommandString = commandString;
 
 			RegisterDefaultSymbolParsers();
 		}
-
-		/// <summary>
-		/// Initializes a new <see cref="Interpreter"/> instance.
-		/// Memory size will be initialized to the default memory size.
-		/// </summary>
-		/// <param name="commandString">The string of command to be interpreted.</param>
-		/// <param name="input">The <see cref="IInput"/> to use for getting input to the program.</param>
-		/// <param name="output">The <see cref="IOutput"/> to use writing output from the program.</param>
-		public Interpreter(string commandString, IInput input, IOutput output) :
-			this(commandString, BFProgram.DefaultMemorySize, input, output) { }
 
 
 

@@ -26,32 +26,25 @@ namespace BFInterpreter {
 		/// </summary>
 		public int MemorySize { get; }
 		/// <summary>
-		/// The <see cref="IInput"/> for getting input to the program.
+		/// The configuration for the program.
 		/// </summary>
-		public IInput Input { get; }
-		/// <summary>
-		/// The <see cref="IOutput"/> for writing output from the program.
-		/// </summary>
-		public IOutput Output { get; }
+		public IProgramConfig Config { get; }
 
 
 
 		/// <summary>
 		/// Initializes a new <see cref="BFProgram"/>.
 		/// </summary>
-		/// <param name="memorySize">The size of the program memory.</param>
-		/// <param name="input">The <see cref="IInput"/> for getting input to the program.</param>
-		/// <param name="output">The <see cref="IOutput"/> for writing output from the program.</param>
-		public BFProgram(int memorySize, IInput input, IOutput output) {
-			if (memorySize <= 0) throw new ArgumentException(
-				"Memory size can't be less or equal to 0.", nameof(memorySize)
+		/// <param name="config">The configuration for the program.</param>
+		public BFProgram(IProgramConfig config) {
+			if (config.MemorySize <= 0) throw new ArgumentException(
+				"Memory size can't be less or equal to 0.", nameof(config)
 			);
-
-			memory = new byte[memorySize];
+			
+			Config = config;
+			memory = new byte[Config.MemorySize];
 			memoryPointer = 0;
-			MemorySize = memorySize;
-			Input = input;
-			Output = output;
+			MemorySize = Config.MemorySize;
 		}
 
 
