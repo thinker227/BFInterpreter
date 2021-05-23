@@ -5,6 +5,7 @@ using PBrain;
 
 namespace ConsoleInterface {
 	public class Program {
+
 		private static void Main(string[] args) {
 			/*
 				program string =>				Execute string using default config
@@ -19,13 +20,13 @@ namespace ConsoleInterface {
 			switch (args.Length) {
 				case 1: {
 					config = Config.Default;
-					if (File.Exists(args[0])) program = File.ReadAllText(args[0]);		// .b/.bf file
+					if (File.Exists(args[0])) program = GetProgramStringFromFile(args[0]);		// .b/.bf file
 					else program = args[0];		// program string
 				} break;
 
 				case 2: {
 					config = Config.FromFile(args[0]);
-					if (File.Exists(args[1])) program = File.ReadAllText(args[1]);		// .json file + .b/.bf file
+					if (File.Exists(args[1])) program = GetProgramStringFromFile(args[1]);		// .json file + .b/.bf file
 					else program = args[1];		// .json file + program string
 				} break;
 
@@ -38,5 +39,16 @@ namespace ConsoleInterface {
 
 			interpreter.Run();
 		}
+
+		private static string GetProgramStringFromFile(string path) {
+			FileInfo file = new(path);
+
+			if (file.Extension == ".b" || file.Extension == ".bf") {
+				return File.ReadAllText(file.FullName);
+			}
+
+			throw new IOException($"Invalid file extension '{file.Extension}'.");
+		}
+
 	}
 }
