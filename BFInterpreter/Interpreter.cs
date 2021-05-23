@@ -52,13 +52,20 @@ namespace BFInterpreter {
 
 
 		/// <summary>
-		/// Registers an <see cref="ISymbolParser"/> to use for parsing a symbol.
+		/// Creates an instance of the specified <see cref="ISymbolParser"/> type and registers it as a symbol parser.
 		/// </summary>
 		/// <typeparam name="T">The type of the <see cref="ISymbolParser"/> to register.</typeparam>
 		public void RegisterSymbolParser<T>() where T : class, ISymbolParser, new() {
 			ISymbolParser instance = Activator.CreateInstance<T>();
-			char symbol = instance.Symbol;
-			bool success = symbolParsers.TryAdd(symbol, instance);
+			RegisterSymbolParser(instance);
+		}
+		/// <summary>
+		/// Registers an <see cref="ISymbolParser"/> as a symbol parser.
+		/// </summary>
+		/// <param name="symbolParser"></param>
+		public void RegisterSymbolParser(ISymbolParser symbolParser) {
+			char symbol = symbolParser.Symbol;
+			bool success = symbolParsers.TryAdd(symbol, symbolParser);
 
 			if (!success) throw new Exception(
 				$"A parser with the symbol '{symbol}' is already registered."
