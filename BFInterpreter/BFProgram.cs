@@ -76,11 +76,6 @@ namespace BFInterpreter {
 		/// <returns></returns>
 		public byte GetCurrentMemory() => memory[memoryPointer];
 		/// <summary>
-		/// Returns whether the value of the current memory pointed to by the memory pointer is 0.
-		/// </summary>
-		/// <returns>Whether the current memory is 0.</returns>
-		public bool CurrentMemoryIsZero() => memory[memoryPointer] == 0;
-		/// <summary>
 		/// Sets the current memory pointed to by the memory pointer to an
 		/// inputted value from the program's specified <see cref="IInput"/>.
 		/// </summary>

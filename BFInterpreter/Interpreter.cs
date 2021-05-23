@@ -102,9 +102,7 @@ namespace BFInterpreter {
 		}
 
 		private void ParseSymbol(char symbol) {
-			if (symbolParsers.TryGetValue(symbol, out ISymbolParser parser)) {
-				parser.Parse(this);
-			}
+			if (symbolParsers.TryGetValue(symbol, out ISymbolParser parser)) parser.Parse(this);
 		}
 
 	}

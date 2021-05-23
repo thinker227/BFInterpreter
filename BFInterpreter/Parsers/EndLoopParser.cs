@@ -8,7 +8,7 @@ namespace BFInterpreter.Parsers {
 
 
 		public void Parse(Interpreter interpreter) {
-			if (!interpreter.Program.CurrentMemoryIsZero()) {
+			if (interpreter.Program.GetCurrentMemory() != 0) {
 				interpreter.InstructionPointer = GetLoopStart(interpreter);
 			}
 		}
