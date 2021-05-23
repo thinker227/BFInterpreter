@@ -67,20 +67,43 @@ namespace BFInterpreter {
 		/// Gets the value of the current memory pointed to by the memory pointer.
 		/// </summary>
 		/// <returns></returns>
-		public byte GetCurrentMemory() => memory[memoryPointer];
+		public byte GetCurrentMemory() => memory[MemoryPointer];
 		/// <summary>
 		/// Sets the current memory pointed to by the memory pointer to an
 		/// inputted value from the program's specified <see cref="IInput"/>.
 		/// </summary>
-		public void InputCurrentMemory() => memory[memoryPointer] = Input.GetInput();
+		public void InputCurrentMemory() => memory[MemoryPointer] = Config.Input.GetInput();
+		private void SetCurrentMemory(bool increment) {
+			int value = increment ? memory[MemoryPointer] + 1 : memory[MemoryPointer] - 1;
+
+			switch (Config.MemoryOverflowBehavior) {
+				case OverflowBehavior.Wrap: {
+					if (value < byte.MinValue) value = byte.MaxValue;
+					if (value > byte.MaxValue) value = byte.MinValue;
+				} break;
+
+				case OverflowBehavior.Freeze: {
+					if (value < byte.MinValue) value = byte.MinValue;
+					if (value > byte.MaxValue) value = byte.MaxValue;
+				} break;
+
+				case OverflowBehavior.Throw: {
+					if (value < byte.MinValue || value > byte.MaxValue) throw new ArithmeticException(
+						"An over/underflow occured."
+					);
+				} break;
+			}
+
+			memory[MemoryPointer] = (byte)value;
+		}
 		/// <summary>
 		/// Increments the value of the current memory pointed to by the memory pointer.
 		/// </summary>
-		public void IncrementCurrentMemory() => memory[memoryPointer]++;
+		public void IncrementCurrentMemory() => SetCurrentMemory(true);
 		/// <summary>
 		/// Decrements the value of the current memory pointed to by the memory pointer.
 		/// </summary>
-		public void DecrementCurrentMemory() => memory[memoryPointer]--;
+		public void DecrementCurrentMemory() => SetCurrentMemory(false);
 		/// <summary>
 		/// Gets the <see cref="IEnumerator{T}"/> of the memory.
 		/// </summary>
@@ -91,7 +114,7 @@ namespace BFInterpreter {
 		/// Writes the current memory pointed to by the memory pointer
 		/// as output using the program's specified <see cref="IOutput"/>.
 		/// </summary>
-		public void WriteOutput() => Output.WriteOutput(memory[memoryPointer]);
+		public void WriteOutput() => Config.Output.WriteOutput(memory[MemoryPointer]);
 
 	}
 }

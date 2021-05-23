@@ -81,6 +81,8 @@ namespace BFInterpreter {
 		/// <summary>
 		/// Runs the interpreter.
 		/// </summary>
+		/// <exception cref="BFException">Thrown when an internal exception is thrown,
+		/// including the current interpreter.</exception>
 		public void Run() {
 			while (true) {
 				char current = CommandString[InstructionPointer];
@@ -94,7 +96,13 @@ namespace BFInterpreter {
 		}
 
 		private void ParseSymbol(char symbol) {
-			if (symbolParsers.TryGetValue(symbol, out ISymbolParser parser)) parser.Parse(this);
+			if (symbolParsers.TryGetValue(symbol, out ISymbolParser parser)) {
+				try {
+					parser.Parse(this);
+				} catch (Exception e) {
+					throw new BFException(this, e);
+				}
+			}
 		}
 
 	}
