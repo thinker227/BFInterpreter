@@ -23,7 +23,9 @@ namespace BFInterpreter.Parsers {
 				if (current == '[') loopDepth--;
 			}
 
-			throw new Exception($"Malformed loop ending at position {interpreter.InstructionPointer}.");
+			throw new BFException(
+				interpreter, $"Malformed loop ending at position {interpreter.InstructionPointer}."
+			);
 		}
 
 	}

@@ -2,11 +2,18 @@
 using BFInterpreter.Parsers;
 
 namespace PBrain.Parsers {
-	public class EndFunctionParser : ISymbolParser {
+	public sealed class EndFunctionParser : ISymbolParser {
 
 		public char Symbol => ')';
+		internal FunctionHandler Handler { get; }
 
-		public void Parse(Interpreter interpreter) => throw new System.NotImplementedException();
+
+
+		internal EndFunctionParser(FunctionHandler handler) => Handler = handler;
+
+
+
+		public void Parse(Interpreter interpreter) => Handler.ExitFunction();
 
 	}
 }

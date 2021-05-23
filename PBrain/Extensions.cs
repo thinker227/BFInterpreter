@@ -9,9 +9,11 @@ namespace PBrain {
 		/// </summary>
 		/// <param name="interpreter"></param>
 		public static void RegisterPBrainParsers(this Interpreter interpreter) {
-			interpreter.RegisterSymbolParser<BeginFunctionParser>();
-			interpreter.RegisterSymbolParser<EndFunctionParser>();
-			interpreter.RegisterSymbolParser<ExecuteFunctionParser>();
+			FunctionHandler handler = new(interpreter);
+
+			interpreter.RegisterSymbolParser(new BeginFunctionParser(handler));
+			interpreter.RegisterSymbolParser(new EndFunctionParser(handler));
+			interpreter.RegisterSymbolParser(new ExecuteFunctionParser(handler));
 		}
 
 	}

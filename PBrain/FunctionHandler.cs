@@ -1,0 +1,59 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using BFInterpreter;
+using PBrain.Parsers;
+
+namespace PBrain {
+	internal sealed class FunctionHandler {
+
+		// Represents no function having been defined for a memory value
+		private const int FunctionEmpty = -1;
+
+		// Contains the instruction pointer positions each memory value points to
+		// The program "++(,.)" would set the 2nd index in the array to a value of 2
+		private readonly int[] functionPositions;
+		private readonly Stack<int> callStack;
+
+
+
+		public Interpreter Interpreter { get; }
+
+
+
+		public FunctionHandler(Interpreter interpreter) {
+			Interpreter = interpreter;
+			functionPositions = new int[byte.MaxValue + 1];
+			callStack = new();
+			System.Array.Fill(functionPositions, FunctionEmpty);
+		}
+
+
+
+		public void DefineFunction() {
+			int currentMemory = Interpreter.Program.GetCurrentMemory();
+			functionPositions[currentMemory] = Interpreter.InstructionPointer;
+		}
+
+		public void EnterFunction() {
+			int currentMemory = Interpreter.Program.GetCurrentMemory();
+
+			if (functionPositions[currentMemory] == FunctionEmpty) throw new BFException(
+				Interpreter, $"No function has been defined for the value '{currentMemory}'."
+			);
+
+			callStack.Push(Interpreter.InstructionPointer);
+			int functionPosition = functionPositions[currentMemory];
+			Interpreter.InstructionPointer = functionPosition;
+		}
+
+		public void ExitFunction() {
+			if (callStack.Count == 0) throw new BFException(
+				Interpreter, "Could not exit function because the call stack is empty."
+			);
+
+			int exitPosition = callStack.Pop();
+			Interpreter.InstructionPointer = exitPosition;
+		}
+
+	}
+}
