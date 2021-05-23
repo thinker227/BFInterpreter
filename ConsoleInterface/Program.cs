@@ -1,5 +1,6 @@
 ﻿using System;
 using BFInterpreter;
+using PBrain;
 
 namespace ConsoleInterface {
 	public class Program {
@@ -7,7 +8,13 @@ namespace ConsoleInterface {
 			string program = Console.ReadLine();
 
 			ConsoleInputOutput inputOutput = new();
-			Interpreter interpreter = new(program, new Config());
+			Config config = new();
+			Interpreter interpreter = new(program, config);
+
+			if (config.UsePBrain) {
+				interpreter.RegisterPBrainParsers();
+			}
+
 			interpreter.OnProgramExit += OnExit;
 			interpreter.Run();
 		}
