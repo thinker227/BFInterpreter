@@ -13,7 +13,7 @@ namespace BFInterpreter.Parsers {
 			}
 		}
 
-		private int GetLoopStart(Interpreter interpreter) {
+		private static int GetLoopStart(Interpreter interpreter) {
 			int loopDepth = 0;
 			for (int i = interpreter.InstructionPointer - 1; i >= 0; i--) {
 				char current = interpreter.CommandString[i];
