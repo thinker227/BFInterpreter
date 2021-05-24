@@ -54,6 +54,36 @@ namespace BFInterpreter {
 
 
 		/// <summary>
+		/// Utility method for getting the begin and end pairs of a sequence in a command string.
+		/// </summary>
+		/// <param name="commandString">The command string to get the begin and end pairs of.</param>
+		/// <param name="begin">The character representing the beginning of the pair.</param>
+		/// <param name="end">The character representing the end of the pair.</param>
+		/// <returns>A dictionary containing the beginning and ending pairs for each instance of
+		/// <paramref name="begin"/> and <paramref name="end"/> in <paramref name="commandString"/></returns>
+		public static Dictionary<int, int> GetBeginEndPairs(string commandString, char begin, char end) {
+			Dictionary<int, int> pairs = new();
+			Stack<int> beginnings = new();
+
+			for (int i = 0; i < commandString.Length; i++) {
+				char current = commandString[i];
+
+				if (current == end) beginnings.Push(i);
+				if (current == begin) {
+					if (beginnings.Count == 0) throw new Exception(
+						$"Inconsistent pair ending at position {i}."
+					);
+
+					int currentBegin = beginnings.Pop();
+					pairs.Add(currentBegin, i);
+					pairs.Add(i, currentBegin);
+				}
+			}
+
+			return pairs;
+		}
+
+		/// <summary>
 		/// Creates an instance of the specified <see cref="ISymbolParser"/> type and registers it as a symbol parser.
 		/// </summary>
 		/// <typeparam name="T">The type of the <see cref="ISymbolParser"/> to register.</typeparam>
@@ -106,7 +136,6 @@ namespace BFInterpreter {
 
 			OnProgramExit?.Invoke(0, "Success");
 		}
-
 		private void ParseSymbol(char symbol) {
 			if (
 				parserTypes.TryGetValue(symbol, out Type type) &&

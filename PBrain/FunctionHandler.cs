@@ -26,30 +26,13 @@ namespace PBrain {
 		public FunctionHandler(Interpreter interpreter) {
 			Interpreter = interpreter;
 			functionPositions = new int[byte.MaxValue + 1];
-			beginEndPairs = GetBeginEndPairs(Interpreter.CommandString);
+			beginEndPairs = Interpreter.GetBeginEndPairs(Interpreter.CommandString, '(', ')');
 			callStack = new();
 
-			System.Array.Fill(functionPositions, FunctionEmpty);
+			Array.Fill(functionPositions, FunctionEmpty);
 		}
 
 
-
-		public static Dictionary<int, int> GetBeginEndPairs(string commandString) {
-			Dictionary<int, int> returnDictionary = new();
-			Stack<int> beginnings = new();
-
-			for (int i = 0; i < commandString.Length; i++) {
-				char current = commandString[i];
-
-				if (current == ')' && beginnings.Count == 0) throw new Exception(
-					$"Inconsistent function ending at position {i}."
-				);
-				if (current == '(') beginnings.Push(i);
-				if (current == ')') returnDictionary.Add(beginnings.Pop(), i);
-			}
-
-			return returnDictionary;
-		}
 
 		public void DefineFunction() {
 			int currentMemory = Interpreter.Program.GetCurrentMemory();
