@@ -68,8 +68,8 @@ namespace BFInterpreter {
 			for (int i = 0; i < commandString.Length; i++) {
 				char current = commandString[i];
 
-				if (current == end) beginnings.Push(i);
-				if (current == begin) {
+				if (current == begin) beginnings.Push(i);
+				if (current == end) {
 					if (beginnings.Count == 0) throw new Exception(
 						$"Inconsistent pair ending at position {i}."
 					);
@@ -116,8 +116,9 @@ namespace BFInterpreter {
 			RegisterSymbolParser<InputParser>();
 			RegisterSymbolParser<OutputParser>();
 
-			RegisterSymbolParser<BeginLoopParser>();
-			RegisterSymbolParser<EndLoopParser>();
+			LoopHandler loopHandler = new(this);
+			RegisterSymbolParser(new BeginLoopParser(loopHandler));
+			RegisterSymbolParser(new EndLoopParser(loopHandler));
 		}
 
 		/// <summary>
