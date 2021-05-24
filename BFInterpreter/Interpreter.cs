@@ -8,7 +8,8 @@ namespace BFInterpreter {
 	/// </summary>
 	public sealed class Interpreter {
 
-		private readonly Dictionary<char, ISymbolParser> symbolParsers;
+		private readonly Dictionary<char, Type> parserTypes;
+		private readonly Dictionary<Type, ISymbolParser> parserInstances;
 
 
 
@@ -41,7 +42,8 @@ namespace BFInterpreter {
 		/// <param name="commandString">The string of command to be interpreted.</param>
 		/// <param name="config">The configuration for the interpreter and program.</param>
 		public Interpreter(string commandString, IInterpreterConfig config) {
-			symbolParsers = new();
+			parserTypes = new();
+			parserInstances = new();
 			InstructionPointer = 0;
 			Program = new(config);
 			CommandString = commandString;
@@ -62,13 +64,16 @@ namespace BFInterpreter {
 		/// <summary>
 		/// Registers an <see cref="ISymbolParser"/> as a symbol parser.
 		/// </summary>
-		/// <param name="symbolParser"></param>
-		public void RegisterSymbolParser(ISymbolParser symbolParser) {
-			char symbol = symbolParser.Symbol;
-			bool success = symbolParsers.TryAdd(symbol, symbolParser);
+		/// <param name="instance"></param>
+		public void RegisterSymbolParser(ISymbolParser instance) {
+			char symbol = instance.Symbol;
+			Type type = instance.GetType();
 
-			if (!success) throw new Exception(
+			if (!parserTypes.TryAdd(symbol, type)) throw new Exception(
 				$"A parser with the symbol '{symbol}' is already registered."
+			);
+			if (!parserInstances.TryAdd(type, instance)) throw new Exception(
+				$"A parser of type '{type.FullName}' is already registered."
 			);
 		}
 		private void RegisterDefaultSymbolParsers() {
@@ -103,7 +108,10 @@ namespace BFInterpreter {
 		}
 
 		private void ParseSymbol(char symbol) {
-			if (symbolParsers.TryGetValue(symbol, out ISymbolParser parser)) {
+			if (
+				parserTypes.TryGetValue(symbol, out Type type) &&
+				parserInstances.TryGetValue(type, out ISymbolParser parser)
+			) {
 				try {
 					parser.Parse(this);
 				} catch (Exception e) {
