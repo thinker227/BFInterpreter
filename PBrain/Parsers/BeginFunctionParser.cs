@@ -15,7 +15,7 @@ namespace PBrain.Parsers {
 
 		public void Parse(Interpreter interpreter) {
 			Handler.DefineFunction();
-			Handler.SkipToFunctionEnd();
+			Handler.Interpreter.InstructionPointer = Handler.GetFunctionExit();
 		}
 
 	}

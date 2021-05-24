@@ -11,7 +11,9 @@
 
 
 		public void Parse(Interpreter interpreter) {
-			if (interpreter.Program.GetCurrentMemory() == 0) Handler.JumpToLoopEnd();
+			if (interpreter.Program.GetCurrentMemory() == 0) {
+				Handler.Interpreter.InstructionPointer = Handler.GetLoopExit();
+			}
 		}
 
 	}

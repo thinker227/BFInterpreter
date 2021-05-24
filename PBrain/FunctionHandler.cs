@@ -5,6 +5,9 @@ using BFInterpreter;
 using PBrain.Parsers;
 
 namespace PBrain {
+	/// <summary>
+	/// Represents a handler for PBrain functions.
+	/// </summary>
 	internal sealed class FunctionHandler {
 
 		// Represents no function having been defined for a memory value
@@ -13,7 +16,7 @@ namespace PBrain {
 		// Contains the instruction pointer positions each memory value points to
 		// The program "++(,.)" would set the 2nd index in the array to a value of 2
 		private readonly int[] functionPositions;
-		// Contains the corresponding function ending for each function opening
+		// Contains the corresponding function ending for each function opening and vice versa
 		private readonly Dictionary<int, int> beginEndPairs;
 		private readonly Stack<int> callStack;
 
@@ -23,6 +26,9 @@ namespace PBrain {
 
 
 
+		/// <summary>
+		/// Initializes a new <see cref="FunctionHandler"/> instance.
+		/// </summary>
 		public FunctionHandler(Interpreter interpreter) {
 			Interpreter = interpreter;
 			functionPositions = new int[byte.MaxValue + 1];
@@ -34,23 +40,33 @@ namespace PBrain {
 
 
 
+		/// <summary>
+		/// Defines the current instruction pointer position as the entry point
+		/// for a new function corresponding to the value of the current memory.
+		/// </summary>
 		public void DefineFunction() {
 			int currentMemory = Interpreter.Program.GetCurrentMemory();
 			functionPositions[currentMemory] = Interpreter.InstructionPointer;
 		}
 
-		public void SkipToFunctionEnd() {
-			if (beginEndPairs.TryGetValue(Interpreter.InstructionPointer, out int end)) {
-				Interpreter.InstructionPointer = end;
-				return;
-			}
+		/// <summary>
+		/// Gets the instruction pointer position corresponding to the exit point of the current function.
+		/// </summary>
+		/// <returns>The exit point of the current function.</returns>
+		public int GetFunctionExit() {
+			if (beginEndPairs.TryGetValue(Interpreter.InstructionPointer, out int end)) return end;
 
 			throw new Exception(
 				$"No end-point has been defined for the position {Interpreter.InstructionPointer}."
 			);
 		}
 
-		public void EnterFunction() {
+		/// <summary>
+		/// Gets the instruction pointer position corresponding to the
+		/// entry point of the function pointed to by the current memory.
+		/// </summary>
+		/// <returns>The entry point of the function pointed to by the current memory.</returns>
+		public int GetFunctionEntry() {
 			int currentMemory = Interpreter.Program.GetCurrentMemory();
 
 			if (functionPositions[currentMemory] == FunctionEmpty) throw new Exception(
@@ -58,17 +74,20 @@ namespace PBrain {
 			);
 
 			callStack.Push(Interpreter.InstructionPointer);
-			int functionPosition = functionPositions[currentMemory];
-			Interpreter.InstructionPointer = functionPosition;
+			return functionPositions[currentMemory];
 		}
 
-		public void ExitFunction() {
+		/// <summary>
+		/// Gets the instruction pointer position corresponding
+		/// to the position to exit the current function to.
+		/// </summary>
+		/// <returns>The current last entry on the function callstack.</returns>
+		public int GetReturnPosition() {
 			if (callStack.Count == 0) throw new Exception(
 				"Could not exit function because the call stack is empty."
 			);
 
-			int exitPosition = callStack.Pop();
-			Interpreter.InstructionPointer = exitPosition;
+			return callStack.Pop();
 		}
 
 	}

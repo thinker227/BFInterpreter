@@ -12,7 +12,9 @@ namespace BFInterpreter.Parsers {
 
 
 
-		public void Parse(Interpreter interpreter) => Handler.JumpToLoopBegin();
+		public void Parse(Interpreter interpreter) {
+			Handler.Interpreter.InstructionPointer = Handler.GetLoopEntry();
+		}
 
 	}
 }

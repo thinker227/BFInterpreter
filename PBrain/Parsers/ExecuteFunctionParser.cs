@@ -13,7 +13,7 @@ namespace PBrain.Parsers {
 
 
 
-		public void Parse(Interpreter interpreter) => Handler.EnterFunction();
+		public void Parse(Interpreter interpreter) => Handler.GetFunctionEntry();
 
 	}
 }
