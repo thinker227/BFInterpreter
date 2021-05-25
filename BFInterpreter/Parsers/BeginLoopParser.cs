@@ -1,18 +1,21 @@
 ﻿namespace BFInterpreter.Parsers {
 	public sealed class BeginLoopParser : ISymbolParser {
 
+		private readonly LoopHandler handler;
+
+
+
 		public char Symbol => '[';
-		internal LoopHandler Handler { get; }
 
 
 
-		internal BeginLoopParser(LoopHandler handler) => Handler = handler;
+		internal BeginLoopParser(LoopHandler handler) => this.handler = handler;
 
 
 
 		public void Parse(Interpreter interpreter) {
 			if (interpreter.Program.GetCurrentMemory() == 0) {
-				Handler.Interpreter.InstructionPointer = Handler.GetLoopExit();
+				interpreter.InstructionPointer = handler.GetLoopExit();
 			}
 		}
 

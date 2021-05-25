@@ -1,19 +1,20 @@
-﻿using System;
-
-namespace BFInterpreter.Parsers {
+﻿namespace BFInterpreter.Parsers {
 	public sealed class EndLoopParser : ISymbolParser {
 
+		private readonly LoopHandler handler;
+
+
+
 		public char Symbol => ']';
-		internal LoopHandler Handler { get; }
 
 
 
-		internal EndLoopParser(LoopHandler handler) => Handler = handler;
+		internal EndLoopParser(LoopHandler handler) => this.handler = handler;
 
 
 
 		public void Parse(Interpreter interpreter) {
-			Handler.Interpreter.InstructionPointer = Handler.GetLoopEntry();
+			interpreter.InstructionPointer = handler.GetLoopEntry();
 		}
 
 	}

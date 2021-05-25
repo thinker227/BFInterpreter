@@ -4,17 +4,20 @@ using BFInterpreter.Parsers;
 namespace PBrain.Parsers {
 	public sealed class EndFunctionParser : ISymbolParser {
 
+		private readonly FunctionHandler handler;
+
+
+
 		public char Symbol => ')';
-		internal FunctionHandler Handler { get; }
 
 
 
-		internal EndFunctionParser(FunctionHandler handler) => Handler = handler;
+		internal EndFunctionParser(FunctionHandler handler) => this.handler = handler;
 
 
 
 		public void Parse(Interpreter interpreter) {
-			Handler.Interpreter.InstructionPointer = Handler.GetReturnPosition();
+			interpreter.InstructionPointer = handler.GetReturnPosition();
 		}
 
 	}

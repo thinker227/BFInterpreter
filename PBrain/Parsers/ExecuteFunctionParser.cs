@@ -4,16 +4,19 @@ using BFInterpreter.Parsers;
 namespace PBrain.Parsers {
 	public sealed class ExecuteFunctionParser : ISymbolParser {
 
+		private readonly FunctionHandler handler;
+
+
+
 		public char Symbol => ':';
-		internal FunctionHandler Handler { get; }
 
 
 
-		internal ExecuteFunctionParser(FunctionHandler handler) => Handler = handler;
+		internal ExecuteFunctionParser(FunctionHandler handler) => this.handler = handler;
 
 
 
-		public void Parse(Interpreter interpreter) => Handler.GetFunctionEntry();
+		public void Parse(Interpreter interpreter) => handler.GetFunctionEntry();
 
 	}
 }
