@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using BFInterpreter.Parsers;
 
 namespace BFInterpreter {
 	/// <summary>
@@ -23,6 +20,7 @@ namespace BFInterpreter {
 		/// </summary>
 		public LoopHandler(Interpreter interpreter) {
 			Interpreter = interpreter;
+			
 			beginEndPairs = Interpreter.GetBeginEndPairs(Interpreter.CommandString, '[', ']');
 		}
 

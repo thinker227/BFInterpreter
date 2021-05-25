@@ -120,6 +120,22 @@ namespace BFInterpreter {
 			RegisterSymbolParser(new BeginLoopParser(loopHandler));
 			RegisterSymbolParser(new EndLoopParser(loopHandler));
 		}
+		/// <summary>
+		/// Gets the registered <see cref="ISymbolParser"/> of a specified type.
+		/// </summary>
+		/// <typeparam name="T">The type of the <see cref="ISymbolParser"/> to get.</typeparam>
+		/// <returns>The <see cref="ISymbolParser"/> registered in
+		/// the interpreter of type <typeparamref name="T"/>.</returns>
+		public ISymbolParser GetParser<T>() where T : ISymbolParser {
+			Type type = typeof(T);
+
+			bool success = parserInstances.TryGetValue(type, out ISymbolParser parser);
+
+			if (success) return parser;
+			throw new Exception(
+				$"No parser of type '{type.FullName}' is registered."
+			);
+		}
 
 		/// <summary>
 		/// Runs the interpreter.
