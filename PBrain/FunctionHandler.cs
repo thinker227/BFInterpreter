@@ -10,15 +10,15 @@ namespace PBrain {
 	/// </summary>
 	internal sealed class FunctionHandler {
 
-		// Represents no function having been defined for a memory value
-		private const int FunctionEmpty = -1;
-
 		// Contains the instruction pointer positions each memory value points to
 		// The program "++(,.)" would set the 2nd index in the array to a value of 2
-		private readonly int[] functionPositions;
+		private int[] functionPositions;
 		// Contains the corresponding function ending for each function opening and vice versa
-		private readonly Dictionary<int, int> beginEndPairs;
-		private readonly Stack<int> callStack;
+		private Dictionary<int, int> beginEndPairs;
+		private Stack<int> callStack;
+
+		// Represents no function having been defined for a memory value
+		private const int FunctionEmpty = -1;
 
 
 
@@ -31,14 +31,18 @@ namespace PBrain {
 		/// </summary>
 		public FunctionHandler(Interpreter interpreter) {
 			Interpreter = interpreter;
+			Interpreter.OnCommandStringChanged += OnCommandStringChange;
+		}
+
+
+
+		private void OnCommandStringChange(Interpreter interpreter, string newCommandString) {
 			functionPositions = new int[byte.MaxValue + 1];
-			beginEndPairs = Interpreter.GetBeginEndPairs(Interpreter.CommandString, '(', ')');
+			beginEndPairs = interpreter.GetBeginEndPairs('(', ')');
 			callStack = new();
 
 			Array.Fill(functionPositions, FunctionEmpty);
 		}
-
-
 
 		/// <summary>
 		/// Defines the current instruction pointer position as the entry point

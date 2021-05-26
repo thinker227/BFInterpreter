@@ -33,11 +33,11 @@ namespace ConsoleInterface {
 				default: Environment.Exit(1); return;
 			}
 
-			Interpreter interpreter = new(program, config);
+			Interpreter interpreter = new(config);
 			
 			if (config.UsePBrain) interpreter.RegisterPBrainParsers();
 
-			interpreter.Run();
+			interpreter.Run(program);
 		}
 
 		private static string GetProgramStringFromFile(string path) {

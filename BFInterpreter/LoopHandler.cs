@@ -7,7 +7,7 @@ namespace BFInterpreter {
 	/// </summary>
 	internal sealed class LoopHandler {
 
-		private readonly Dictionary<int, int> beginEndPairs;
+		private Dictionary<int, int> beginEndPairs;
 
 
 
@@ -20,11 +20,14 @@ namespace BFInterpreter {
 		/// </summary>
 		public LoopHandler(Interpreter interpreter) {
 			Interpreter = interpreter;
-			
-			beginEndPairs = Interpreter.GetBeginEndPairs(Interpreter.CommandString, '[', ']');
+			Interpreter.OnCommandStringChanged += OnCommandStringChange;
 		}
 
 
+
+		private void OnCommandStringChange(Interpreter interpreter, string newCommandString) {
+			beginEndPairs = Interpreter.GetBeginEndPairs('[', ']');
+		}
 
 		/// <summary>
 		/// Gets the instruction pointer position corresponding to the exit point of the current loop entry.

@@ -8,6 +8,7 @@ namespace BFInterpreter {
 	/// </summary>
 	public sealed class Interpreter {
 
+		private string commandString;
 		private readonly Dictionary<char, Type> parserTypes;
 		private readonly Dictionary<Type, ISymbolParser> parserInstances;
 
@@ -20,7 +21,15 @@ namespace BFInterpreter {
 		/// <summary>
 		/// The current string of commands interpreted by this <see cref="Interpreter"/>.
 		/// </summary>
-		public string CommandString { get; }
+		public string CommandString {
+			get => commandString;
+			private set {
+				if (value != commandString) {
+					commandString = value;
+					OnCommandStringChanged?.Invoke(this, commandString);
+				}
+			}
+		}
 		/// <summary>
 		/// The configuration for the interpreter and program.
 		/// </summary>
@@ -30,9 +39,9 @@ namespace BFInterpreter {
 		/// </summary>
 		public int InstructionPointer { get; set; }
 		/// <summary>
-		/// Event invoked when the program exits.
+		/// Event invoked when <see cref="CommandString"/> is changed.
 		/// </summary>
-		public event ProgramExitEventHandler OnProgramExit;
+		public event CommandStringChangedEventHandler OnCommandStringChanged;
 
 
 
@@ -41,12 +50,12 @@ namespace BFInterpreter {
 		/// </summary>
 		/// <param name="commandString">The string of command to be interpreted.</param>
 		/// <param name="config">The configuration for the interpreter and program.</param>
-		public Interpreter(string commandString, IInterpreterConfig config) {
+		public Interpreter(IInterpreterConfig config) {
+			commandString = string.Empty;
 			parserTypes = new();
 			parserInstances = new();
 			InstructionPointer = 0;
 			Program = new(config);
-			CommandString = commandString;
 
 			RegisterDefaultSymbolParsers();
 		}
@@ -158,7 +167,9 @@ namespace BFInterpreter {
 		/// </summary>
 		/// <exception cref="InterpreterException">Thrown when an internal exception is thrown,
 		/// including the current interpreter.</exception>
-		public void Run() {
+		public void Run(string commandString) {
+			CommandString = commandString;
+
 			while (true) {
 				char current = CommandString[InstructionPointer];
 				ParseSymbol(current);
@@ -167,7 +178,7 @@ namespace BFInterpreter {
 				if (InstructionPointer >= CommandString.Length) break;
 			}
 
-			OnProgramExit?.Invoke(0, "Success");
+			CommandString = string.Empty;
 		}
 		private void ParseSymbol(char symbol) {
 			if (
