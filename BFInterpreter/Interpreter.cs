@@ -61,17 +61,17 @@ namespace BFInterpreter {
 		/// <param name="end">The character representing the end of the pair.</param>
 		/// <returns>A dictionary containing the beginning and ending pairs for each instance of
 		/// <paramref name="begin"/> and <paramref name="end"/> in <paramref name="commandString"/></returns>
-		public static Dictionary<int, int> GetBeginEndPairs(string commandString, char begin, char end) {
+		public Dictionary<int, int> GetBeginEndPairs(char begin, char end) {
 			Dictionary<int, int> pairs = new();
 			Stack<int> beginnings = new();
 
-			for (int i = 0; i < commandString.Length; i++) {
-				char current = commandString[i];
+			for (int i = 0; i < CommandString.Length; i++) {
+				char current = CommandString[i];
 
 				if (current == begin) beginnings.Push(i);
 				if (current == end) {
-					if (beginnings.Count == 0) throw new Exception(
-						$"Inconsistent pair ending at position {i}."
+					if (beginnings.Count == 0) throw new InterpreterException(
+						this, $"Inconsistent pair ending at position {i}."
 					);
 
 					int currentBegin = beginnings.Pop();
@@ -99,11 +99,11 @@ namespace BFInterpreter {
 			char symbol = instance.Symbol;
 			Type type = instance.GetType();
 
-			if (!parserTypes.TryAdd(symbol, type)) throw new Exception(
-				$"A parser with the symbol '{symbol}' is already registered."
+			if (!parserTypes.TryAdd(symbol, type)) throw new InterpreterException(
+				this, $"A parser with the symbol '{symbol}' is already registered."
 			);
-			if (!parserInstances.TryAdd(type, instance)) throw new Exception(
-				$"A parser of type '{type.FullName}' is already registered."
+			if (!parserInstances.TryAdd(type, instance)) throw new InterpreterException(
+				this, $"A parser of type '{type.FullName}' is already registered."
 			);
 		}
 		private void RegisterDefaultSymbolParsers() {
@@ -132,15 +132,19 @@ namespace BFInterpreter {
 			bool success = parserInstances.TryGetValue(type, out ISymbolParser parser);
 
 			if (success) return parser;
-			throw new Exception(
-				$"No parser of type '{type.FullName}' is registered."
+			throw new InterpreterException(
+				this, $"No parser of type '{type.FullName}' is registered."
 			);
 		}
-		public void UnregisterSymbolParser<T>() {
+		/// <summary>
+		/// Unregisters a previously registered symbol parser.
+		/// </summary>
+		/// <typeparam name="T">The <see cref="ISymbolParser"/> to unregister.</typeparam>
+		public void UnregisterSymbolParser<T>() where T : ISymbolParser {
 			Type type = typeof(T);
 
-			if (!parserInstances.ContainsKey(type)) throw new Exception(
-				$"No parser of type '{type.FullName}' is registered."
+			if (!parserInstances.ContainsKey(type)) throw new InterpreterException(
+				this, $"No parser of type '{type.FullName}' is registered."
 			);
 
 			char symbol = parserInstances[type].Symbol;
@@ -152,7 +156,7 @@ namespace BFInterpreter {
 		/// <summary>
 		/// Runs the interpreter.
 		/// </summary>
-		/// <exception cref="BFException">Thrown when an internal exception is thrown,
+		/// <exception cref="InterpreterException">Thrown when an internal exception is thrown,
 		/// including the current interpreter.</exception>
 		public void Run() {
 			while (true) {
@@ -173,7 +177,9 @@ namespace BFInterpreter {
 				try {
 					parser.Parse(this);
 				} catch (Exception e) {
-					throw new BFException(this, e);
+					throw new InterpreterException(
+						this, $"Parser error in '{parser.GetType().FullName}'", e
+					);
 				}
 			}
 		}
