@@ -136,6 +136,18 @@ namespace BFInterpreter {
 				$"No parser of type '{type.FullName}' is registered."
 			);
 		}
+		public void UnregisterSymbolParser<T>() {
+			Type type = typeof(T);
+
+			if (!parserInstances.ContainsKey(type)) throw new Exception(
+				$"No parser of type '{type.FullName}' is registered."
+			);
+
+			char symbol = parserInstances[type].Symbol;
+
+			parserTypes.Remove(symbol);
+			parserInstances.Remove(type);
+		}
 
 		/// <summary>
 		/// Runs the interpreter.
