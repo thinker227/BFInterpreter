@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using BFInterpreter.Parsers;
 
 namespace BFInterpreter {
@@ -19,18 +20,6 @@ namespace BFInterpreter {
 		/// </summary>
 		public BFProgram Program { get; }
 		/// <summary>
-		/// The current string of commands interpreted by this <see cref="Interpreter"/>.
-		/// </summary>
-		public string CommandString {
-			get => commandString;
-			private set {
-				if (value != commandString) {
-					commandString = value;
-					OnCommandStringChanged?.Invoke(this, commandString);
-				}
-			}
-		}
-		/// <summary>
 		/// The configuration for the interpreter and program.
 		/// </summary>
 		public IInterpreterConfig Config { get; }
@@ -39,9 +28,25 @@ namespace BFInterpreter {
 		/// </summary>
 		public int InstructionPointer { get; set; }
 		/// <summary>
+		/// The current string of commands interpreted by this <see cref="Interpreter"/>.
+		/// </summary>
+		public string CommandString => commandString;
+		/// <summary>
+		/// The delay between steps of the program.
+		/// </summary>
+		public TimeSpan StepDelay { get; set; }
+		/// <summary>
 		/// Event invoked when <see cref="CommandString"/> is changed.
 		/// </summary>
 		public event CommandStringChangedEventHandler OnCommandStringChanged;
+		/// <summary>
+		/// Event invoked at the end of a step of the program.
+		/// </summary>
+		public event InterpreterEventHandler OnProgramStep;
+		/// <summary>
+		/// Event invoked when the program exits.
+		/// </summary>
+		public event InterpreterEventHandler OnProgramExit;
 
 
 
@@ -54,8 +59,11 @@ namespace BFInterpreter {
 			commandString = string.Empty;
 			parserTypes = new();
 			parserInstances = new();
-			InstructionPointer = 0;
+
 			Program = new(config);
+			Config = config;
+			InstructionPointer = 0;
+			StepDelay = TimeSpan.Zero;
 
 			RegisterDefaultSymbolParsers();
 		}
@@ -168,17 +176,22 @@ namespace BFInterpreter {
 		/// <exception cref="InterpreterException">Thrown when an internal exception is thrown,
 		/// including the current interpreter.</exception>
 		public void Run(string commandString) {
-			CommandString = commandString;
+			SetCommandString(commandString);
 
 			while (true) {
 				char current = CommandString[InstructionPointer];
 				ParseSymbol(current);
 
+				OnProgramStep?.Invoke(this);
+
+				Thread.Sleep(StepDelay);
+
 				InstructionPointer++;
 				if (InstructionPointer >= CommandString.Length) break;
 			}
 
-			CommandString = string.Empty;
+			SetCommandString(string.Empty);
+			OnProgramExit?.Invoke(this);
 		}
 		private void ParseSymbol(char symbol) {
 			if (
@@ -188,10 +201,17 @@ namespace BFInterpreter {
 				try {
 					parser.Parse(this);
 				} catch (Exception e) {
+					SetCommandString(string.Empty);
 					throw new InterpreterException(
 						this, $"Parser error in '{parser.GetType().FullName}'", e
 					);
 				}
+			}
+		}
+		private void SetCommandString(string value) {
+			if (value != commandString) {
+				commandString = value;
+				OnCommandStringChanged?.Invoke(this, commandString);
 			}
 		}
 
