@@ -9,7 +9,9 @@ namespace BFInterpreter {
 	/// </summary>
 	public sealed class Interpreter {
 
+		private int instructionPointer;
 		private string commandString;
+		private bool isRunning;
 		private readonly Dictionary<char, Type> parserTypes;
 		private readonly Dictionary<Type, ISymbolParser> parserInstances;
 
@@ -26,15 +28,23 @@ namespace BFInterpreter {
 		/// <summary>
 		/// The current location in <see cref="CommandString"/> execution is occuring.
 		/// </summary>
-		public int InstructionPointer { get; set; }
+		public int InstructionPointer {
+			get => instructionPointer;
+			set {
+				if (!IsRunning) throw new InterpreterException(
+					this, $"{nameof(InstructionPointer)} can only be set during execution."
+				);
+				instructionPointer = value;
+			}
+		}
 		/// <summary>
 		/// The current string of commands interpreted by this <see cref="Interpreter"/>.
 		/// </summary>
 		public string CommandString => commandString;
 		/// <summary>
-		/// The delay between steps of the program.
+		/// Whether the interpreter is currently running or not.
 		/// </summary>
-		public TimeSpan StepDelay { get; set; }
+		public bool IsRunning => isRunning;
 		/// <summary>
 		/// Event invoked when <see cref="CommandString"/> is changed.
 		/// </summary>
@@ -56,14 +66,14 @@ namespace BFInterpreter {
 		/// <param name="commandString">The string of command to be interpreted.</param>
 		/// <param name="config">The configuration for the interpreter and program.</param>
 		public Interpreter(IInterpreterConfig config) {
+			instructionPointer = 0;
 			commandString = string.Empty;
+			isRunning = false;
 			parserTypes = new();
 			parserInstances = new();
 
 			Program = new(config);
 			Config = config;
-			InstructionPointer = 0;
-			StepDelay = TimeSpan.Zero;
 
 			RegisterDefaultSymbolParsers();
 		}
@@ -176,7 +186,9 @@ namespace BFInterpreter {
 		/// <exception cref="InterpreterException">Thrown when an internal exception is thrown,
 		/// including the current interpreter.</exception>
 		public void Run(string commandString) {
+			instructionPointer = 0;
 			SetCommandString(commandString);
+			isRunning = true;
 
 			while (true) {
 				char current = CommandString[InstructionPointer];
@@ -184,12 +196,13 @@ namespace BFInterpreter {
 
 				OnProgramStep?.Invoke(this);
 
-				Thread.Sleep(StepDelay);
+				Thread.Sleep(Config.StepDelay);
 
 				InstructionPointer++;
 				if (InstructionPointer >= CommandString.Length) break;
 			}
 
+			isRunning = false;
 			SetCommandString(string.Empty);
 			OnProgramExit?.Invoke(this);
 		}
@@ -202,6 +215,8 @@ namespace BFInterpreter {
 					parser.Parse(this);
 				} catch (Exception e) {
 					SetCommandString(string.Empty);
+					isRunning = false;
+
 					throw new InterpreterException(
 						this, $"Parser error in '{parser.GetType().FullName}'", e
 					);
