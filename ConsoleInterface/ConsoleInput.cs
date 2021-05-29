@@ -2,7 +2,7 @@
 using BFInterpreter;
 
 namespace ConsoleInterface {
-	public class ConsoleInputOutput : IInput, IOutput {
+	public class ConsoleInput : IInput {
 
 		public byte GetInput() {
 			bool success;
@@ -13,10 +13,9 @@ namespace ConsoleInterface {
 				success = byte.TryParse(input, out result);
 			} while (!success);
 
+			Console.Clear();
 			return result;
 		}
-
-		public void WriteOutput(byte output) => Console.WriteLine($"'{(char)output}' ({output})");
 
 	}
 }

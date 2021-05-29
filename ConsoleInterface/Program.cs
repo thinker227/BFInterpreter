@@ -26,8 +26,13 @@ namespace ConsoleInterface {
 
 			Config config = new();
 			Interpreter interpreter = new(config);
+
+			ProgramDisplay display = new(interpreter);
+			config.Input = new ConsoleInput();
+			config.Output = display;
+
 			interpreter.RegisterPBrainParsers();
-			
+
 			interpreter.Run(programString);
 		}
 

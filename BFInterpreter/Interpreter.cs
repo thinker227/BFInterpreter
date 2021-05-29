@@ -191,10 +191,10 @@ namespace BFInterpreter {
 			isRunning = true;
 
 			while (true) {
+				OnProgramStep?.Invoke(this);
+
 				char current = CommandString[InstructionPointer];
 				ParseSymbol(current);
-
-				OnProgramStep?.Invoke(this);
 
 				Thread.Sleep(Config.StepDelay);
 
@@ -202,6 +202,7 @@ namespace BFInterpreter {
 				if (InstructionPointer >= CommandString.Length) break;
 			}
 
+			OnProgramStep?.Invoke(this);
 			isRunning = false;
 			SetCommandString(string.Empty);
 			OnProgramExit?.Invoke(this);
