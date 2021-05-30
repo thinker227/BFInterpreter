@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using BFInterpreter.Parsers;
 
@@ -11,6 +12,7 @@ namespace BFInterpreter {
 
 		private int instructionPointer;
 		private string commandString;
+		private string commandStringRaw;
 		private bool isRunning;
 		private readonly Dictionary<char, Type> parserTypes;
 		private readonly Dictionary<Type, ISymbolParser> parserInstances;
@@ -41,6 +43,11 @@ namespace BFInterpreter {
 		/// The current string of commands interpreted by this <see cref="Interpreter"/>.
 		/// </summary>
 		public string CommandString => commandString;
+		/// <summary>
+		/// The raw string of commands interpreted by this <see cref="Interpreter"/>
+		/// without non-parsable characters removed.
+		/// </summary>
+		public string CommandStringRaw => commandStringRaw;
 		/// <summary>
 		/// Whether the interpreter is currently running or not.
 		/// </summary>
@@ -186,6 +193,8 @@ namespace BFInterpreter {
 		/// <exception cref="InterpreterException">Thrown when an internal exception is thrown,
 		/// including the current interpreter.</exception>
 		public void Run(string commandString) {
+			commandString = GetParsableString(commandString);
+
 			instructionPointer = 0;
 			SetCommandString(commandString);
 			isRunning = true;
@@ -193,15 +202,12 @@ namespace BFInterpreter {
 			while (InstructionPointer < CommandString.Length) {
 				OnProgramStep?.Invoke(this);
 
-				bool success;
-				do {
-					char current = CommandString[InstructionPointer];
-					success = ParseSymbol(current);
-
-					InstructionPointer++;
-				} while (!success && InstructionPointer < CommandString.Length);
+				char current = CommandString[InstructionPointer];
+				ParseSymbol(current);
 
 				Thread.Sleep(Config.StepDelay);
+
+				InstructionPointer++;
 			}
 
 			OnProgramStep?.Invoke(this);
@@ -235,6 +241,15 @@ namespace BFInterpreter {
 				commandString = value;
 				OnCommandStringChanged?.Invoke(this, commandString);
 			}
+		}
+		private string GetParsableString(string str) {
+			StringBuilder builder = new();
+
+			foreach (char c in str) {
+				if (parserTypes.ContainsKey(c)) builder.Append(c);
+			}
+
+			return builder.ToString();
 		}
 
 	}
