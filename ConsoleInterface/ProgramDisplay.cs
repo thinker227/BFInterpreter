@@ -63,7 +63,7 @@ namespace ConsoleInterface {
 
 				//i++;
 			}
-			Write(']');
+			Write($"] (#{memoryPointer})");
 		}
 
 		private void WriteProgramString() {
