@@ -190,16 +190,18 @@ namespace BFInterpreter {
 			SetCommandString(commandString);
 			isRunning = true;
 
-			while (true) {
+			while (InstructionPointer < CommandString.Length) {
 				OnProgramStep?.Invoke(this);
 
-				char current = CommandString[InstructionPointer];
-				ParseSymbol(current);
+				bool success;
+				do {
+					char current = CommandString[InstructionPointer];
+					success = ParseSymbol(current);
+
+					InstructionPointer++;
+				} while (!success && InstructionPointer < CommandString.Length);
 
 				Thread.Sleep(Config.StepDelay);
-
-				InstructionPointer++;
-				if (InstructionPointer >= CommandString.Length) break;
 			}
 
 			OnProgramStep?.Invoke(this);
@@ -207,7 +209,7 @@ namespace BFInterpreter {
 			SetCommandString(string.Empty);
 			OnProgramExit?.Invoke(this);
 		}
-		private void ParseSymbol(char symbol) {
+		private bool ParseSymbol(char symbol) {
 			if (
 				parserTypes.TryGetValue(symbol, out Type type) &&
 				parserInstances.TryGetValue(type, out ISymbolParser parser)
@@ -222,7 +224,11 @@ namespace BFInterpreter {
 						this, $"Parser error in '{parser.GetType().FullName}'", e
 					);
 				}
+
+				return true;
 			}
+			
+			return false;
 		}
 		private void SetCommandString(string value) {
 			if (value != commandString) {
