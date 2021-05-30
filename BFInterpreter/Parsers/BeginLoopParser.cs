@@ -14,7 +14,7 @@
 
 
 		public void Parse(Interpreter interpreter) {
-			if (interpreter.Program.GetCurrentMemory() == 0) {
+			if (interpreter.Program.CurrentMemory == 0) {
 				interpreter.InstructionPointer = handler.GetLoopExit();
 			}
 		}

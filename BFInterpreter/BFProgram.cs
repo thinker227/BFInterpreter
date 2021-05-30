@@ -26,6 +26,10 @@ namespace BFInterpreter {
 		/// </summary>
 		public int MemorySize { get; }
 		/// <summary>
+		/// The current memory pointed to by the memory pointer.
+		/// </summary>
+		public byte CurrentMemory => memory[MemoryPointer];
+		/// <summary>
 		/// The configuration for the program.
 		/// </summary>
 		public IProgramConfig Config { get; }
@@ -63,11 +67,6 @@ namespace BFInterpreter {
 		/// </summary>
 		public void DecrementPointer() => SetPointer(MemoryPointer - 1);
 
-		/// <summary>
-		/// Gets the value of the current memory pointed to by the memory pointer.
-		/// </summary>
-		/// <returns></returns>
-		public byte GetCurrentMemory() => memory[MemoryPointer];
 		/// <summary>
 		/// Sets the current memory pointed to by the memory pointer to an
 		/// inputted value from the program's specified <see cref="IInput"/>.

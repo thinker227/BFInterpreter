@@ -49,7 +49,7 @@ namespace PBrain {
 		/// for a new function corresponding to the value of the current memory.
 		/// </summary>
 		public void DefineFunction() {
-			int currentMemory = Interpreter.Program.GetCurrentMemory();
+			int currentMemory = Interpreter.Program.CurrentMemory;
 			functionPositions[currentMemory] = Interpreter.InstructionPointer;
 		}
 
@@ -71,7 +71,7 @@ namespace PBrain {
 		/// </summary>
 		/// <returns>The entry point of the function pointed to by the current memory.</returns>
 		public int GetFunctionEntry() {
-			int currentMemory = Interpreter.Program.GetCurrentMemory();
+			int currentMemory = Interpreter.Program.CurrentMemory;
 
 			if (functionPositions[currentMemory] == FunctionEmpty) throw new Exception(
 				$"No function has been defined for the value '{currentMemory}'."
