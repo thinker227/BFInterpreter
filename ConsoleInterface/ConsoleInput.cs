@@ -5,13 +5,17 @@ namespace ConsoleInterface {
 	public class ConsoleInput : IInput {
 
 		public byte GetInput() {
-			bool success;
 			byte result;
 
-			do {
+			while (true) {
 				string input = Console.ReadLine();
-				success = byte.TryParse(input, out result);
-			} while (!success);
+
+				if (byte.TryParse(input, out result)) break;
+				if (char.TryParse(input, out char charResult)) {
+					result = (byte)charResult;
+					break;
+				}
+			}
 
 			Console.Clear();
 			return result;

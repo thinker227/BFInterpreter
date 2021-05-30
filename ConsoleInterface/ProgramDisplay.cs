@@ -49,15 +49,19 @@ namespace ConsoleInterface {
 			int memoryMax = memoryPointer + 3;
 
 			Write('[');
-			int i = 0;
-			while (memory.MoveNext() && i >= memoryMin && i <= memoryMax) {
+			//int i = 0;
+			for (int i = 0; i <= memoryMax; i++) {
+			//while (memory.MoveNext() && i <= memoryMax) {
+				if (!memory.MoveNext()) break;
+				if (i < memoryMin) continue;
+
 				if (i == memoryPointer) BackgroundColor = ConsoleColor.DarkGray;
 				Write(memory.Current);
 				ResetColor();
 
 				if (i != memoryMax) Write(", ");
 
-				i++;
+				//i++;
 			}
 			Write(']');
 		}
